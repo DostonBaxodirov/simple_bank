@@ -1,0 +1,19 @@
+version: "2"
+cloud:
+    organization: ""
+    project: ""
+    hostname: ""
+servers: []
+sql:
+   - engine: "postgresql"
+     queries: "./db/query/"
+     schema: "./db/migration/"
+     gen:
+         go:
+             package: "tutorial"
+             out: "tutorial"
+overrides:
+    go: null
+plugins: []
+rules: []
+options: {}
