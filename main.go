@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"simpleBank/api"
 	"simpleBank/tutorial"
@@ -9,7 +10,7 @@ import (
 
 const (
 	dbDriver      = "postgres"
-	dbSource      = "postgresql://nei:54321@localhost:5432/control_system_db?sslmode=disable"
+	dbSource      = "postgresql://nei:54321@localhost:5432/simple_bank?sslmode=disable"
 	serverAddress = "0.0.0.0:8080"
 )
 
