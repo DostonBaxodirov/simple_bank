@@ -2,15 +2,18 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
+	"log"
 	"net/http"
+	"simpleBank/token"
 	"simpleBank/tutorial"
 	db "simpleBank/tutorial"
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
-	Currency string `json:"currency" binding:"required"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
@@ -20,15 +23,23 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ErrorResponse(err))
 		return
 	}
-
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := tutorial.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    authPayload.Username,
 		Currency: req.Currency,
 		Balance:  0,
 	}
 
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			log.Println(pqErr.Code.Name())
+			switch pqErr.Code.Name() {
+			case "foreign_key_violation", "unique_violation":
+				ctx.JSON(http.StatusForbidden, ErrorResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
 		return
 	}
@@ -60,12 +71,19 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if authPayload.Username != account.Owner {
+		err := errors.New("account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized, ErrorResponse(err))
+		return
+	}
+
 	ctx.JSON(http.StatusOK, account)
 }
 
 type listAccountRequest struct {
-	PageID   int64 `form:"page_id" binding:"required,min=1"`
-	PageSize int64 `form:"page_size" binding:"required,min=5,max=10"`
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
 func (server *Server) listAccount(ctx *gin.Context) {
@@ -82,11 +100,6 @@ func (server *Server) listAccount(ctx *gin.Context) {
 	}
 	accounts, err := server.store.ListAccounts(ctx, arg)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, ErrorResponse(err))
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
 		return
 	}

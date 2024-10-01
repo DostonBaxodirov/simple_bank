@@ -17,9 +17,10 @@ FOR NO KEY UPDATE;
 
 -- name: ListAccounts :many
 SELECT * FROM account
-LIMIT sqlc.arg(limit)
-         OFFSET sqlc.arg(offset)
-ORDER BY id;
+WHERE owner = $1
+ORDER BY id
+LIMIT $2
+OFFSET $3;
 
 -- name: UpdateAccount :one
 UPDATE account

@@ -33,3 +33,12 @@ type Transfer struct {
 	// must be positive
 	Amount int64
 }
+
+type User struct {
+	Username          string
+	HashedPassword    string
+	FullName          string
+	Email             string
+	PasswordChangedAt time.Time
+	CreatedAt         sql.NullTime
+}
