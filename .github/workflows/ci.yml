@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: postgres:17.2-alpine3.21
         env:
           POSTGRES_USER: nei
           POSTGRES_PASSWORD: 54321
