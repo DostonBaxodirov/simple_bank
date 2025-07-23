@@ -10,10 +10,6 @@ SELECT * FROM account
 WHERE id=$1 LIMIT 1
 FOR NO KEY UPDATE ;
 
--- name: ListAccount :many
-SELECT * FROM account
-ORDER BY id;
-
 -- name: UpdateAccount :one
 UPDATE account
 SET balance=$2
@@ -29,3 +25,10 @@ RETURNING *;
 -- name: DeleteAccount :exec
 DELETE FROM account
 WHERE id=$1;
+
+-- name: ListAccount :many
+SELECT * From account
+WHERE owner=$1
+ORDER BY id
+LIMIT $2
+OFFSET $3;

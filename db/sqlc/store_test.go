@@ -7,11 +7,15 @@ import (
 	"log"
 	"sync"
 	"testing"
+	"udemy-course/utils"
 )
 
 func TestStore_TransferTx(t *testing.T) {
-
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := utils.LoadConfig("../..")
+	if err != nil {
+		log.Fatalln("Cannot load configurations")
+	}
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatalln("We cannot connect to database", err)
 	}
@@ -104,8 +108,11 @@ func TestStore_TransferTx(t *testing.T) {
 }
 
 func TestStoreChaseDeadlock_TransferTx(t *testing.T) {
-
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := utils.LoadConfig("../..")
+	if err != nil {
+		log.Fatalln("Cannot load configurations")
+	}
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatalln("We cannot connect to database", err)
 	}
