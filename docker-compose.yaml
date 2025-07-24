@@ -1,0 +1,28 @@
+
+services:
+  db:
+    image: postgres:17.2-alpine3.21
+    restart: always
+    environment:
+      - POSTGRES_USER=nei
+      - POSTGRES_PASSWORD=54321
+      - POSTGRES_DB=simple_bank
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - db_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://nei:54321@db:5432/simple_bank?sslmode=disable
+    depends_on:
+      - db
+    #— bu db konteyneri 5432 portda tayyor bo‘lguncha kutadi, tayyor bo‘lsa myapp ni ishga tushiradi.
+    entrypoint: ["/app/wait-for","db:5432","--","/app/start.sh"]
+    command: ["/app/main"]
