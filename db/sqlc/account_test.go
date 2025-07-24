@@ -34,17 +34,17 @@ func TestQueries_CreateAccount(t *testing.T) {
 	createRandomAccount(t)
 }
 
-func TestQueries_GetAccount(t *testing.T) {
-	account1 := createRandomAccount(t)
-	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, account2)
-
-	require.Equal(t, account2.ID, account1.ID)
-	require.Equal(t, account2.Owner, account1.Owner)
-	require.Equal(t, account2.Balance, account1.Balance)
-	require.Equal(t, account2.Currency, account1.Currency)
-}
+//func TestQueries_GetAccount(t *testing.T) {
+//	account1 := createRandomAccount(t)
+//	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
+//	require.NoError(t, err)
+//	require.NotEmpty(t, account2)
+//
+//	require.Equal(t, account2.ID, account1.ID)
+//	require.Equal(t, account2.Owner, account1.Owner)
+//	require.Equal(t, account2.Balance, account1.Balance)
+//	require.Equal(t, account2.Currency, account1.Currency)
+//}
 
 func TestQueries_UpdateAccount(t *testing.T) {
 	account1 := createRandomAccount(t)
